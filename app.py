@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 
 st.set_page_config(page_title="FinSight - Fraud Detection", page_icon="🏦", layout="centered")
 
-model = joblib.load("models/fraud_detection_model.pkl")
+model = joblib.load("fraud_detection_model.pkl")
 
 st.title("FinSight Banking Analytics")
 st.subheader("AI-Powered Credit Card Fraud Detection")
