@@ -4,279 +4,167 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FinSight — Banking Fraud Intelligence</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
   :root {
-    --navy: #0A0F1E;
-    --card: #131D35;
-    --blue: #1F6FEB;
-    --blue2: #3B8FF5;
-    --cyan: #00D4FF;
-    --red: #FF4D6D;
-    --green: #00E5A0;
-    --yellow: #FFB800;
-    --text: #E8EEF8;
-    --muted: #6B7FA3;
-    --border: rgba(31,111,235,0.15);
+    --bg:      #080D1A;
+    --card:    #111827;
+    --border:  rgba(255,255,255,0.06);
+    --blue:    #3B82F6;
+    --cyan:    #06B6D4;
+    --green:   #10B981;
+    --red:     #EF4444;
+    --amber:   #F59E0B;
+    --text:    #F1F5F9;
+    --muted:   #64748B;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--navy);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-  }
-
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; min-height:100vh; padding:24px; }
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(31,111,235,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(31,111,235,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+    content:''; position:fixed; inset:0;
+    background-image: linear-gradient(rgba(59,130,246,0.03) 1px,transparent 1px), linear-gradient(90deg,rgba(59,130,246,0.03) 1px,transparent 1px);
+    background-size:48px 48px; pointer-events:none; z-index:0;
   }
+  .page { position:relative; z-index:1; max-width:1280px; margin:0 auto; }
 
-  .wrapper { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+  /* HEADER */
+  .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:18px; border-bottom:1px solid var(--border); }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .brand-icon { width:42px; height:42px; background:linear-gradient(135deg,#1D4ED8,#06B6D4); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 0 20px rgba(6,182,212,0.25); }
+  .brand-name { font-size:22px; font-weight:800; background:linear-gradient(120deg,#fff 40%,#06B6D4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .brand-sub { font-size:11px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-top:1px; }
+  .header-right { display:flex; align-items:center; gap:14px; }
+  .live-pill { display:flex; align-items:center; gap:6px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); color:var(--green); padding:5px 12px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+  .live-dot { width:5px; height:5px; background:var(--green); border-radius:50%; animation:blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .header-meta { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); text-align:right; line-height:1.8; }
 
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border);
-  }
+  /* FILTER BAR */
+  .filter-bar { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; align-items:center; }
+  .filter-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; font-weight:600; }
+  .filter-btn { padding:7px 14px; border-radius:20px; border:1px solid var(--border); background:var(--card); color:var(--muted); font-family:'Plus Jakarta Sans',sans-serif; font-size:11px; font-weight:600; cursor:pointer; transition:all .2s; letter-spacing:0.3px; }
+  .filter-btn:hover { border-color:var(--blue); color:#93C5FD; }
+  .filter-btn.active { background:rgba(59,130,246,0.15); border-color:var(--blue); color:#93C5FD; }
+  .filter-btn.active-red { background:rgba(239,68,68,0.15); border-color:var(--red); color:#FCA5A5; }
+  .filter-btn.active-green { background:rgba(16,185,129,0.15); border-color:var(--green); color:#6EE7B7; }
+  .alert-btn { margin-left:auto; padding:7px 14px; border-radius:20px; border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); color:#FCA5A5; font-family:'Plus Jakarta Sans',sans-serif; font-size:11px; font-weight:600; cursor:pointer; transition:all .2s; }
+  .alert-btn:hover { background:rgba(239,68,68,0.15); }
 
-  .logo { display: flex; align-items: center; gap: 14px; }
-  .logo-icon {
-    width: 48px; height: 48px;
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    box-shadow: 0 0 24px rgba(0,212,255,0.3);
-  }
-  .logo-text h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 26px; font-weight: 800;
-    background: linear-gradient(135deg, #fff 30%, var(--cyan));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .logo-text p { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+  /* SEARCH */
+  .search-row { display:flex; gap:10px; margin-bottom:18px; }
+  .search-input { flex:1; padding:9px 16px; background:var(--card); border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; outline:none; transition:border-color .2s; }
+  .search-input:focus { border-color:var(--blue); }
+  .search-input::placeholder { color:var(--muted); }
+  .search-btn { padding:9px 20px; background:var(--blue); border:none; border-radius:10px; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:background .2s; }
+  .search-btn:hover { background:#2563EB; }
+  .search-result { padding:9px 16px; background:var(--card); border:1px solid var(--border); border-radius:10px; font-size:12px; display:none; white-space:nowrap; }
 
-  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
-
-  .live-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3);
-    color: var(--green); padding: 6px 12px; border-radius: 20px;
-    font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
-  }
-  .live-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
-
-  /* Filter Bar */
-  .filter-bar {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .filter-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; }
-
-  .filter-btn {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-  }
-  .filter-btn:hover { border-color: var(--blue); color: var(--blue2); }
-  .filter-btn.active { background: rgba(31,111,235,0.2); border-color: var(--blue); color: var(--cyan); }
-  .filter-btn.active-red { background: rgba(255,77,109,0.2); border-color: var(--red); color: var(--red); }
-  .filter-btn.active-green { background: rgba(0,229,160,0.2); border-color: var(--green); color: var(--green); }
-
-  /* KPI Grid */
-  .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
-
-  .kpi-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px; padding: 24px;
-    position: relative; overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-    animation: fadeUp 0.5s ease forwards;
-  }
-  .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
-  .kpi-card.selected { box-shadow: 0 0 0 2px var(--cyan); }
-  .kpi-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; }
-  .kpi-card.blue::before { background: linear-gradient(90deg,var(--blue),var(--cyan)); }
-  .kpi-card.red::before { background: linear-gradient(90deg,var(--red),#FF8FA3); }
-  .kpi-card.green::before { background: linear-gradient(90deg,var(--green),#00FFB3); }
-  .kpi-card.yellow::before { background: linear-gradient(90deg,var(--yellow),#FFD166); }
-
-  .kpi-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
-  .kpi-value { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; line-height:1; margin-bottom:8px; }
-  .kpi-card.blue .kpi-value { color: var(--cyan); }
-  .kpi-card.red .kpi-value { color: var(--red); }
-  .kpi-card.green .kpi-value { color: var(--green); }
-  .kpi-card.yellow .kpi-value { color: var(--yellow); }
-  .kpi-sub { font-size:11px; color:var(--muted); }
-  .kpi-icon { position:absolute; top:20px; right:20px; font-size:28px; opacity:0.15; }
-
-  /* Tooltip */
-  .kpi-tooltip {
-    display: none;
-    position: absolute;
-    bottom: -40px; left: 50%;
-    transform: translateX(-50%);
-    background: #1F3D7A;
-    color: #fff;
-    font-size: 10px;
-    padding: 4px 10px;
-    border-radius: 6px;
-    white-space: nowrap;
-    z-index: 10;
-  }
-  .kpi-card:hover .kpi-tooltip { display: block; }
-
-  /* Charts */
-  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-  .chart-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px; padding: 24px;
-    animation: fadeUp 0.5s ease 0.3s forwards; opacity: 0;
-    transition: border-color 0.2s;
-  }
-  .chart-card:hover { border-color: rgba(31,111,235,0.3); }
-  .chart-card.full { grid-column: 1 / -1; }
-
-  .chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-  .chart-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; }
-  .chart-badge { font-size:10px; padding:4px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:1px; }
-  .badge-blue { background:rgba(31,111,235,0.15); color:var(--blue2); border:1px solid rgba(31,111,235,0.2); }
-  .badge-red { background:rgba(255,77,109,0.15); color:var(--red); border:1px solid rgba(255,77,109,0.2); }
-  .badge-green { background:rgba(0,229,160,0.15); color:var(--green); border:1px solid rgba(0,229,160,0.2); }
-
-  /* Bottom */
-  .bottom-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:24px; }
-  .model-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; }
-  .model-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:20px; }
-
-  .stat-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border); }
-  .stat-row:last-child { border-bottom:none; }
-  .stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
-  .stat-value { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; color:var(--cyan); }
-  .progress-bar { width:100%; height:4px; background:rgba(255,255,255,0.05); border-radius:2px; margin-top:6px; overflow:hidden; }
-  .progress-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--blue),var(--cyan)); transition:width 1.5s ease; width:0%; }
-
-  /* Alert panel */
-  .alert-panel {
-    background: rgba(255,77,109,0.08);
-    border: 1px solid rgba(255,77,109,0.2);
-    border-radius: 16px; padding: 20px;
-    margin-bottom: 24px;
-    display: none;
-  }
-  .alert-panel.show { display: block; animation: fadeUp 0.3s ease; }
-  .alert-title { color: var(--red); font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:12px; }
-  .alert-item { font-size:11px; color:var(--muted); padding:6px 0; border-bottom:1px solid rgba(255,77,109,0.1); display:flex; justify-content:space-between; }
+  /* ALERT PANEL */
+  .alert-panel { background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2); border-radius:14px; padding:18px; margin-bottom:16px; display:none; }
+  .alert-panel.show { display:block; animation:fadeUp .3s ease; }
+  .alert-title { color:#FCA5A5; font-size:13px; font-weight:700; margin-bottom:12px; }
+  .alert-item { font-size:11px; color:var(--muted); padding:7px 0; border-bottom:1px solid rgba(239,68,68,0.08); display:flex; justify-content:space-between; }
   .alert-item:last-child { border-bottom:none; }
-  .alert-flag { color:var(--red); font-weight:700; }
+  .alert-flag { color:#FCA5A5; font-weight:700; }
 
-  /* Search */
-  .search-bar {
-    display: flex; gap: 10px; margin-bottom: 24px; align-items: center;
-  }
-  .search-input {
-    flex: 1; padding: 10px 16px;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text);
-    font-family: 'DM Mono', monospace; font-size: 12px;
-    outline: none; transition: border-color 0.2s;
-  }
-  .search-input:focus { border-color: var(--blue); }
-  .search-input::placeholder { color: var(--muted); }
-  .search-btn {
-    padding: 10px 20px; background: var(--blue);
-    border: none; border-radius: 10px; color: #fff;
-    font-family: 'DM Mono', monospace; font-size: 12px;
-    cursor: pointer; transition: background 0.2s;
-  }
-  .search-btn:hover { background: var(--blue2); }
-  .search-result {
-    font-size: 12px; padding: 10px 16px;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; display: none;
-  }
-  .search-result.show { display: block; }
+  /* KPI ROW */
+  .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:16px; }
+  .kpi { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; position:relative; overflow:hidden; cursor:pointer; transition:transform .2s, box-shadow .2s; }
+  .kpi:hover { transform:translateY(-3px); box-shadow:0 10px 36px rgba(0,0,0,0.35); }
+  .kpi::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:14px 14px 0 0; }
+  .kpi.blue::after  { background:linear-gradient(90deg,#3B82F6,#06B6D4); }
+  .kpi.red::after   { background:linear-gradient(90deg,#EF4444,#F97316); }
+  .kpi.green::after { background:linear-gradient(90deg,#10B981,#06B6D4); }
+  .kpi.amber::after { background:linear-gradient(90deg,#F59E0B,#EAB308); }
+  .kpi-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; font-weight:600; }
+  .kpi-value { font-size:30px; font-weight:800; line-height:1; margin-bottom:5px; }
+  .kpi.blue  .kpi-value { color:#60A5FA; }
+  .kpi.red   .kpi-value { color:#F87171; }
+  .kpi.green .kpi-value { color:#34D399; }
+  .kpi.amber .kpi-value { color:#FCD34D; }
+  .kpi-desc { font-size:11px; color:var(--muted); }
+  .kpi-bg-icon { position:absolute; right:14px; top:50%; transform:translateY(-50%); font-size:32px; opacity:0.07; }
 
-  footer {
-    border-top: 1px solid var(--border);
-    padding-top: 20px;
-    display: flex; justify-content:space-between; align-items:center;
-  }
-  .footer-left { font-size:11px; color:var(--muted); }
-  .footer-left span { color:var(--cyan); }
-  .tech-stack { display:flex; gap:8px; flex-wrap:wrap; }
-  .tech-pill { font-size:10px; padding:4px 10px; border-radius:20px; background:rgba(31,111,235,0.1); border:1px solid var(--border); color:var(--blue2); text-transform:uppercase; letter-spacing:1px; }
+  /* MAIN GRID */
+  .main-grid { display:grid; grid-template-columns:1.2fr 0.8fr; gap:14px; margin-bottom:14px; }
 
-  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  /* BOTTOM GRID */
+  .bottom-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+
+  /* CHART CARD */
+  .chart-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; transition:border-color .2s; }
+  .chart-card:hover { border-color:rgba(59,130,246,0.2); }
+  .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .card-title { font-size:13px; font-weight:700; color:var(--text); }
+  .card-badge { font-size:10px; padding:3px 9px; border-radius:20px; text-transform:uppercase; letter-spacing:1px; font-weight:600; }
+  .badge-blue  { background:rgba(59,130,246,0.12);  color:#60A5FA;  border:1px solid rgba(59,130,246,0.2); }
+  .badge-red   { background:rgba(239,68,68,0.12);   color:#F87171;  border:1px solid rgba(239,68,68,0.2); }
+  .badge-green { background:rgba(16,185,129,0.12);  color:#34D399;  border:1px solid rgba(16,185,129,0.2); }
+  .badge-amber { background:rgba(245,158,11,0.12);  color:#FCD34D;  border:1px solid rgba(245,158,11,0.2); }
+
+  /* MODEL STATS */
+  .model-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); }
+  .model-row:last-child { border-bottom:none; }
+  .model-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+  .model-val { font-size:18px; font-weight:800; color:#60A5FA; }
+  .bar-wrap { flex:1; margin:0 12px; height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#3B82F6,#06B6D4); transition:width 1.2s ease; width:0; }
+
+  /* FOOTER */
+  .footer { margin-top:18px; padding-top:14px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .footer-left { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
+  .footer-left span { color:#60A5FA; }
+  .tech-pills { display:flex; gap:5px; flex-wrap:wrap; }
+  .tech { font-size:10px; padding:3px 8px; border-radius:20px; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.15); color:#93C5FD; text-transform:uppercase; letter-spacing:0.5px; font-weight:600; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
   @media(max-width:900px) {
-    .kpi-grid { grid-template-columns:repeat(2,1fr); }
-    .charts-grid { grid-template-columns:1fr; }
+    .kpi-row { grid-template-columns:1fr 1fr; }
+    .main-grid { grid-template-columns:1fr; }
     .bottom-grid { grid-template-columns:1fr; }
-    .chart-card.full { grid-column:1; }
   }
 </style>
 </head>
 <body>
-<div class="wrapper">
+<div class="page">
 
-  <!-- Header -->
-  <header>
-    <div class="logo">
-      <div class="logo-icon">🏦</div>
-      <div class="logo-text">
-        <h1>FinSight</h1>
-        <p>Banking Fraud Intelligence Platform</p>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand">
+      <div class="brand-icon">🏦</div>
+      <div>
+        <div class="brand-name">FinSight</div>
+        <div class="brand-sub">Banking Fraud Intelligence</div>
       </div>
     </div>
     <div class="header-right">
-      <div class="live-badge"><div class="live-dot"></div> Live Analysis</div>
-      <div style="font-size:11px;color:var(--muted)">215,945 transactions · Random Forest · ROC AUC 0.9819</div>
+      <div class="live-pill"><div class="live-dot"></div>Live</div>
+      <div class="header-meta">215,945 transactions · Random Forest · ROC AUC 0.9819</div>
     </div>
-  </header>
-
-  <!-- Filter Bar -->
-  <div class="filter-bar">
-    <span class="filter-label">Filter:</span>
-    <button class="filter-btn active" onclick="applyFilter('all', this)">All Transactions</button>
-    <button class="filter-btn" onclick="applyFilter('fraud', this)">Fraud Only</button>
-    <button class="filter-btn" onclick="applyFilter('normal', this)">Normal Only</button>
-    <button class="filter-btn" onclick="applyFilter('high', this)">High Amount</button>
-    <button class="filter-btn" onclick="applyFilter('medium', this)">Medium Amount</button>
-    <button class="filter-btn" onclick="applyFilter('low', this)">Low Amount</button>
-    <button class="filter-btn" style="margin-left:auto;border-color:rgba(255,77,109,0.3);color:var(--red)" onclick="toggleAlerts()">🚨 Show Alerts</button>
   </div>
 
-  <!-- Alert Panel -->
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" onclick="applyFilter('all',this)">All Transactions</button>
+    <button class="filter-btn" onclick="applyFilter('fraud',this)">Fraud Only</button>
+    <button class="filter-btn" onclick="applyFilter('normal',this)">Normal Only</button>
+    <button class="filter-btn" onclick="applyFilter('high',this)">High Amount</button>
+    <button class="filter-btn" onclick="applyFilter('medium',this)">Medium Amount</button>
+    <button class="filter-btn" onclick="applyFilter('low',this)">Low Amount</button>
+    <button class="alert-btn" onclick="toggleAlerts()">🚨 Show Alerts</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-row">
+    <input class="search-input" id="searchInput" placeholder="Search transaction ID (e.g. 14492) or amount..." onkeypress="if(event.key==='Enter')searchTx()">
+    <button class="search-btn" onclick="searchTx()">Analyse</button>
+    <div class="search-result" id="searchResult"></div>
+  </div>
+
+  <!-- ALERT PANEL -->
   <div class="alert-panel" id="alertPanel">
     <div class="alert-title">🚨 High Risk Transactions Detected</div>
     <div class="alert-item"><span>Transaction #14492 — Amount: $2,125.87</span><span class="alert-flag">FRAUD · 97.3% confidence</span></div>
@@ -286,292 +174,174 @@
     <div class="alert-item"><span>Transaction #19027 — Amount: $988.75</span><span class="alert-flag">FRAUD · 85.2% confidence</span></div>
   </div>
 
-  <!-- Search Bar -->
-  <div class="search-bar">
-    <input class="search-input" id="searchInput" placeholder="Search transaction ID or amount (e.g. 14492)..." onkeypress="if(event.key==='Enter') searchTransaction()">
-    <button class="search-btn" onclick="searchTransaction()">Analyse</button>
-    <div class="search-result" id="searchResult"></div>
-  </div>
-
-  <!-- KPI Cards -->
-  <div class="kpi-grid">
-    <div class="kpi-card blue" onclick="highlightChart('bar', 0)" title="Click to highlight">
-      <div class="kpi-icon">📊</div>
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi blue" onclick="alert('Total Transactions: 215,945\nNormal: 215,544 (99.81%)\nFraud: 401 (0.19%)')">
+      <div class="kpi-bg-icon">📊</div>
       <div class="kpi-label">Total Transactions</div>
       <div class="kpi-value" id="kpi-total">215,945</div>
-      <div class="kpi-sub">Click to explore</div>
-      <div class="kpi-tooltip">Click to highlight on charts</div>
+      <div class="kpi-desc">Click to explore</div>
     </div>
-    <div class="kpi-card red" onclick="highlightChart('bar', 1)">
-      <div class="kpi-icon">🚨</div>
+    <div class="kpi red" onclick="alert('Fraud Detected: 401 transactions\nHigh amount: 125 cases\nMedium amount: 187 cases\nLow amount: 89 cases')">
+      <div class="kpi-bg-icon">🚨</div>
       <div class="kpi-label">Fraud Detected</div>
       <div class="kpi-value" id="kpi-fraud">401</div>
-      <div class="kpi-sub">Click to explore</div>
-      <div class="kpi-tooltip">Click to highlight fraud data</div>
+      <div class="kpi-desc">Click to explore</div>
     </div>
-    <div class="kpi-card green" onclick="showFraudRate()">
-      <div class="kpi-icon">✅</div>
+    <div class="kpi green" onclick="alert('Fraud Rate: 0.19%\n\nBy amount range:\nLow: 0.16% rate\nMedium: 0.17% rate\nHigh: 0.26% rate\n\nMatches real-world banking fraud rates.')">
+      <div class="kpi-bg-icon">✅</div>
       <div class="kpi-label">Fraud Rate</div>
       <div class="kpi-value" id="kpi-rate">0.19%</div>
-      <div class="kpi-sub">Click for breakdown</div>
-      <div class="kpi-tooltip">Click to see rate breakdown</div>
+      <div class="kpi-desc">Click for breakdown</div>
     </div>
-    <div class="kpi-card yellow" onclick="showModelInfo()">
-      <div class="kpi-icon">🤖</div>
+    <div class="kpi amber" onclick="alert('Random Forest Model\n\nAlgorithm: Random Forest (100 trees)\nBalancing: SMOTE oversampling\nTraining: 172,756 transactions\nTest: 43,189 transactions\n\nROC AUC: 0.9819\nPrecision: 94%\nRecall: 84%\nF1 Score: 89%')">
+      <div class="kpi-bg-icon">🤖</div>
       <div class="kpi-label">ROC AUC Score</div>
       <div class="kpi-value">0.9819</div>
-      <div class="kpi-sub">Click for model info</div>
-      <div class="kpi-tooltip">Click to see model details</div>
+      <div class="kpi-desc">Click for model info</div>
     </div>
   </div>
 
-  <!-- Charts Row 1 -->
-  <div class="charts-grid">
+  <!-- MAIN GRID -->
+  <div class="main-grid">
     <div class="chart-card">
-      <div class="chart-header">
-        <div class="chart-title">Fraud vs Normal Transactions</div>
-        <span class="chart-badge badge-red">Click bars to drill down</span>
+      <div class="card-header">
+        <div class="card-title">Fraud vs Normal Transactions</div>
+        <span class="card-badge badge-red">Click bars to drill down</span>
       </div>
-      <div style="height:260px"><canvas id="fraudBarChart"></canvas></div>
+      <div style="height:260px"><canvas id="barChart"></canvas></div>
     </div>
-
     <div class="chart-card">
-      <div class="chart-header">
-        <div class="chart-title">Transaction Class Split</div>
-        <span class="chart-badge badge-blue">Hover for details</span>
+      <div class="card-header">
+        <div class="card-title">Transaction Split</div>
+        <span class="card-badge badge-blue">Hover for details</span>
       </div>
-      <div style="height:260px"><canvas id="pieChart"></canvas></div>
-    </div>
-
-    <div class="chart-card full">
-      <div class="chart-header">
-        <div class="chart-title">Amount Distribution by Transaction Type</div>
-        <span class="chart-badge badge-green">Toggle datasets</span>
-      </div>
-      <div style="height:240px"><canvas id="amountChart"></canvas></div>
+      <div style="height:260px"><canvas id="donutChart"></canvas></div>
     </div>
   </div>
 
-  <!-- Bottom Row -->
+  <!-- BOTTOM GRID -->
   <div class="bottom-grid">
     <div class="chart-card">
-      <div class="chart-header">
-        <div class="chart-title">Fraud by Amount Range</div>
-        <span class="chart-badge badge-red">Interactive</span>
+      <div class="card-header">
+        <div class="card-title">Amount Distribution</div>
+        <span class="card-badge badge-green">Toggle datasets</span>
+      </div>
+      <div style="height:200px"><canvas id="amountChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-header">
+        <div class="card-title">Fraud by Amount Range</div>
+        <span class="card-badge badge-amber">Click to drill down</span>
       </div>
       <div style="height:200px"><canvas id="rangeChart"></canvas></div>
     </div>
-
     <div class="chart-card">
-      <div class="chart-header">
-        <div class="chart-title">Model Performance Radar</div>
-        <span class="chart-badge badge-blue">ML Metrics</span>
+      <div class="card-header">
+        <div class="card-title">Model Performance</div>
+        <span class="card-badge badge-blue">ML Metrics</span>
       </div>
-      <div style="height:200px"><canvas id="confidenceChart"></canvas></div>
-    </div>
-
-    <div class="model-card">
-      <div class="model-title">🤖 Model Performance</div>
-      <div class="stat-row">
-        <div><div class="stat-label">ROC AUC</div><div class="progress-bar"><div class="progress-fill" id="p1"></div></div></div>
-        <div class="stat-value">98.19%</div>
-      </div>
-      <div class="stat-row">
-        <div><div class="stat-label">Precision</div><div class="progress-bar"><div class="progress-fill" id="p2"></div></div></div>
-        <div class="stat-value">94%</div>
-      </div>
-      <div class="stat-row">
-        <div><div class="stat-label">Recall</div><div class="progress-bar"><div class="progress-fill" id="p3"></div></div></div>
-        <div class="stat-value">84%</div>
-      </div>
-      <div class="stat-row">
-        <div><div class="stat-label">F1 Score</div><div class="progress-bar"><div class="progress-fill" id="p4"></div></div></div>
-        <div class="stat-value">89%</div>
-      </div>
-      <div class="stat-row">
-        <div><div class="stat-label">Accuracy</div><div class="progress-bar"><div class="progress-fill" id="p5"></div></div></div>
-        <div class="stat-value">100%</div>
-      </div>
+      <div class="model-row"><div class="model-label">ROC AUC</div><div class="bar-wrap"><div class="bar-fill" id="b1"></div></div><div class="model-val">98.2%</div></div>
+      <div class="model-row"><div class="model-label">Precision</div><div class="bar-wrap"><div class="bar-fill" id="b2"></div></div><div class="model-val">94%</div></div>
+      <div class="model-row"><div class="model-label">Recall</div><div class="bar-wrap"><div class="bar-fill" id="b3"></div></div><div class="model-val">84%</div></div>
+      <div class="model-row"><div class="model-label">F1 Score</div><div class="bar-wrap"><div class="bar-fill" id="b4"></div></div><div class="model-val">89%</div></div>
+      <div class="model-row"><div class="model-label">Accuracy</div><div class="bar-wrap"><div class="bar-fill" id="b5"></div></div><div class="model-val">100%</div></div>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer>
+  <!-- FOOTER -->
+  <div class="footer">
     <div class="footer-left">Built by <span>Mohammed Shawaiz Hussain</span> · FinSight Banking Analytics · 2025</div>
-    <div class="tech-stack">
-      <span class="tech-pill">Python</span>
-      <span class="tech-pill">scikit-learn</span>
-      <span class="tech-pill">PostgreSQL</span>
-      <span class="tech-pill">AWS S3</span>
-      <span class="tech-pill">Streamlit</span>
-      <span class="tech-pill">Random Forest</span>
-      <span class="tech-pill">SMOTE</span>
+    <div class="tech-pills">
+      <span class="tech">Python</span><span class="tech">scikit-learn</span><span class="tech">PostgreSQL</span>
+      <span class="tech">AWS S3</span><span class="tech">Streamlit</span><span class="tech">Random Forest</span><span class="tech">SMOTE</span>
     </div>
-  </footer>
+  </div>
+
 </div>
-
 <script>
-// ── Data ──────────────────────────────────────────────────
-const data = {
-  all:    { total: 215945, fraud: 401,  normal: 215544, rate: '0.19%' },
-  fraud:  { total: 401,    fraud: 401,  normal: 0,      rate: '100%'  },
-  normal: { total: 215544, fraud: 0,    normal: 215544, rate: '0.00%' },
-  high:   { total: 48200,  fraud: 125,  normal: 48075,  rate: '0.26%' },
-  medium: { total: 112800, fraud: 187,  normal: 112613, rate: '0.17%' },
-  low:    { total: 54945,  fraud: 89,   normal: 54856,  rate: '0.16%' },
+const filterData = {
+  all:    { total:'215,945', fraud:'401',  normal:215544, rate:'0.19%' },
+  fraud:  { total:'401',     fraud:'401',  normal:0,      rate:'100%'  },
+  normal: { total:'215,544', fraud:'0',    normal:215544, rate:'0.00%' },
+  high:   { total:'48,200',  fraud:'125',  normal:48075,  rate:'0.26%' },
+  medium: { total:'112,800', fraud:'187',  normal:112613, rate:'0.17%' },
+  low:    { total:'54,945',  fraud:'89',   normal:54856,  rate:'0.16%' },
 };
 
-const chartDefaults = {
-  responsive: true, maintainAspectRatio: false,
-  plugins: { legend: { labels: { color: '#6B7FA3', font: { family: 'DM Mono', size: 11 } } } }
-};
+const gridColor = 'rgba(255,255,255,0.04)';
+const tick = { color:'#64748B', font:{ family:'Plus Jakarta Sans', size:10 } };
+const def = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'#64748B', font:{ family:'Plus Jakarta Sans', size:11 } } } } };
 
-// ── Bar Chart ─────────────────────────────────────────────
-const barChart = new Chart(document.getElementById('fraudBarChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Normal', 'Fraud'],
-    datasets: [{
-      data: [215544, 401],
-      backgroundColor: ['rgba(0,229,160,0.2)', 'rgba(255,77,109,0.2)'],
-      borderColor: ['#00E5A0', '#FF4D6D'],
-      borderWidth: 2, borderRadius: 8,
-    }]
-  },
-  options: {
-    ...chartDefaults,
-    onClick: (e, el) => { if(el.length) { alert(el[0].index === 0 ? '✅ Normal: 215,544 transactions (99.81%)' : '🚨 Fraud: 401 transactions (0.19%)'); } },
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw.toLocaleString()} transactions` } } },
-    scales: {
-      x: { ticks: { color: '#6B7FA3', font: { family: 'DM Mono', size: 11 } }, grid: { color: 'rgba(31,111,235,0.06)' } },
-      y: { ticks: { color: '#6B7FA3', font: { family: 'DM Mono', size: 11 } }, grid: { color: 'rgba(31,111,235,0.06)' } }
-    }
+const barChart = new Chart(document.getElementById('barChart'), {
+  type:'bar',
+  data:{ labels:['Normal','Fraud'], datasets:[{ data:[215544,401], backgroundColor:['rgba(16,185,129,0.15)','rgba(239,68,68,0.2)'], borderColor:['#10B981','#EF4444'], borderWidth:2, borderRadius:8, borderSkipped:false }] },
+  options:{ ...def, onClick:(e,el)=>{ if(el.length) alert(el[0].index===0?'Normal Transactions: 215,544\n99.81% of all transactions\nNo fraud detected':'Fraudulent Transactions: 401\n0.19% of all transactions\nAverage fraud confidence: 91.4%'); },
+    plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:c=>` ${c.raw.toLocaleString()} transactions` } } },
+    scales:{ x:{ ticks:tick, grid:{ color:gridColor } }, y:{ ticks:tick, grid:{ color:gridColor } } }
   }
 });
 
-// ── Pie Chart ─────────────────────────────────────────────
-const pieChart = new Chart(document.getElementById('pieChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Normal (99.81%)', 'Fraud (0.19%)'],
-    datasets: [{
-      data: [215544, 401],
-      backgroundColor: ['rgba(0,212,255,0.3)', 'rgba(255,77,109,0.6)'],
-      borderColor: ['#00D4FF', '#FF4D6D'],
-      borderWidth: 2,
-    }]
-  },
-  options: {
-    ...chartDefaults, cutout: '65%',
-    plugins: {
-      legend: { position: 'bottom', labels: { color: '#6B7FA3', font: { family: 'DM Mono', size: 11 }, padding: 16 } },
-      tooltip: { callbacks: { label: ctx => ` ${ctx.raw.toLocaleString()} (${ctx.label.split('(')[1]}` } }
-    }
-  }
+const donutChart = new Chart(document.getElementById('donutChart'), {
+  type:'doughnut',
+  data:{ labels:['Normal (99.81%)','Fraud (0.19%)'], datasets:[{ data:[215544,401], backgroundColor:['rgba(6,182,212,0.25)','rgba(239,68,68,0.55)'], borderColor:['#06B6D4','#EF4444'], borderWidth:2 }] },
+  options:{ ...def, cutout:'68%', plugins:{ legend:{ position:'bottom', labels:{ color:'#64748B', font:{ family:'Plus Jakarta Sans', size:11 }, padding:20 } } } }
 });
 
-// ── Amount Chart ──────────────────────────────────────────
-const amountChart = new Chart(document.getElementById('amountChart'), {
-  type: 'bar',
-  data: {
-    labels: ['<$10','$10-25','$25-50','$50-100','$100-200','$200-500','$500-1000','>$1000'],
-    datasets: [
-      { label: 'Normal', data: [42000,38000,35000,42000,28000,18000,8000,4544], backgroundColor: 'rgba(0,212,255,0.2)', borderColor: '#00D4FF', borderWidth: 1, borderRadius: 4 },
-      { label: 'Fraud',  data: [45,62,78,95,68,32,14,7], backgroundColor: 'rgba(255,77,109,0.4)', borderColor: '#FF4D6D', borderWidth: 1, borderRadius: 4 }
+new Chart(document.getElementById('amountChart'), {
+  type:'bar',
+  data:{ labels:['<$10','$10-50','$50-100','$100-200','$200-500','>$500'],
+    datasets:[
+      { label:'Normal', data:[42000,73000,42000,28000,18000,12544], backgroundColor:'rgba(6,182,212,0.15)', borderColor:'#06B6D4', borderWidth:1.5, borderRadius:4 },
+      { label:'Fraud',  data:[45,140,95,68,32,21], backgroundColor:'rgba(239,68,68,0.3)', borderColor:'#EF4444', borderWidth:1.5, borderRadius:4 }
     ]
   },
-  options: {
-    ...chartDefaults,
-    plugins: { legend: { position: 'top', labels: { color: '#6B7FA3', font: { family: 'DM Mono', size: 11 } } } },
-    scales: {
-      x: { ticks: { color: '#6B7FA3', font: { family: 'DM Mono', size: 10 } }, grid: { color: 'rgba(31,111,235,0.06)' } },
-      y: { ticks: { color: '#6B7FA3', font: { family: 'DM Mono', size: 10 } }, grid: { color: 'rgba(31,111,235,0.06)' } }
-    }
+  options:{ ...def, plugins:{ legend:{ position:'top', labels:{ color:'#64748B', font:{ family:'Plus Jakarta Sans', size:11 } } } }, scales:{ x:{ ticks:{ ...tick, font:{ family:'JetBrains Mono', size:9 } }, grid:{ color:gridColor } }, y:{ ticks:tick, grid:{ color:gridColor } } } }
+});
+
+new Chart(document.getElementById('rangeChart'), {
+  type:'bar',
+  data:{ labels:['Low','Medium','High'], datasets:[{ data:[89,187,125], backgroundColor:['rgba(16,185,129,0.2)','rgba(245,158,11,0.2)','rgba(239,68,68,0.2)'], borderColor:['#10B981','#F59E0B','#EF4444'], borderWidth:2, borderRadius:8, borderSkipped:false }] },
+  options:{ ...def, onClick:(e,el)=>{ if(el.length){ const info=['Low Amount: 89 fraud cases (0.16% rate)\nTransactions under $50','Medium Amount: 187 fraud cases (0.17% rate)\nTransactions $50-$500','High Amount: 125 fraud cases (0.26% rate)\nTransactions over $500']; alert(info[el[0].index]); } },
+    plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:tick, grid:{ color:gridColor } }, y:{ ticks:tick, grid:{ color:gridColor } } }
   }
 });
 
-// ── Range Chart ───────────────────────────────────────────
-const rangeChart = new Chart(document.getElementById('rangeChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Low Amount','Medium Amount','High Amount'],
-    datasets: [{ data: [89,187,125], backgroundColor: ['rgba(0,229,160,0.3)','rgba(255,184,0,0.3)','rgba(255,77,109,0.3)'], borderColor: ['#00E5A0','#FFB800','#FF4D6D'], borderWidth: 2, borderRadius: 8 }]
-  },
-  options: {
-    ...chartDefaults,
-    onClick: (e, el) => { if(el.length) { const labels = ['Low: 89 frauds (0.16% rate)','Medium: 187 frauds (0.17% rate)','High: 125 frauds (0.26% rate)']; alert(labels[el[0].index]); } },
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { ticks: { color: '#6B7FA3', font: { family: 'DM Mono', size: 11 } }, grid: { color: 'rgba(31,111,235,0.06)' } },
-      y: { ticks: { color: '#6B7FA3', font: { family: 'DM Mono', size: 11 } }, grid: { color: 'rgba(31,111,235,0.06)' } }
-    }
-  }
-});
-
-// ── Radar Chart ───────────────────────────────────────────
-new Chart(document.getElementById('confidenceChart'), {
-  type: 'radar',
-  data: {
-    labels: ['Precision','Recall','F1 Score','Accuracy','AUC'],
-    datasets: [{ label: 'Model', data: [94,84,89,100,98], backgroundColor: 'rgba(0,212,255,0.1)', borderColor: '#00D4FF', borderWidth: 2, pointBackgroundColor: '#00D4FF', pointRadius: 4 }]
-  },
-  options: {
-    ...chartDefaults,
-    scales: { r: { ticks: { color: '#6B7FA3', font: { family: 'DM Mono', size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(31,111,235,0.1)' }, pointLabels: { color: '#6B7FA3', font: { family: 'DM Mono', size: 10 } }, min: 0, max: 100 } },
-    plugins: { legend: { display: false } }
-  }
-});
-
-// ── Interactions ──────────────────────────────────────────
 function applyFilter(type, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active','active-red','active-green'));
-  btn.classList.add(type === 'fraud' ? 'active-red' : type === 'normal' ? 'active-green' : 'active');
-
-  const d = data[type];
-  document.getElementById('kpi-total').textContent = d.total.toLocaleString();
-  document.getElementById('kpi-fraud').textContent = d.fraud.toLocaleString();
-  document.getElementById('kpi-rate').textContent = d.rate;
-
-  barChart.data.datasets[0].data = [d.normal, d.fraud];
+  document.querySelectorAll('.filter-btn').forEach(b => b.className='filter-btn');
+  btn.classList.add(type==='fraud'?'filter-btn active-red':type==='normal'?'filter-btn active-green':'filter-btn active');
+  const d = filterData[type];
+  document.getElementById('kpi-total').textContent = d.total;
+  document.getElementById('kpi-fraud').textContent = d.fraud;
+  document.getElementById('kpi-rate').textContent  = d.rate;
+  barChart.data.datasets[0].data = [d.normal, parseInt(d.fraud.replace(',',''))];
   barChart.update('active');
-  pieChart.data.datasets[0].data = [d.normal, d.fraud];
-  pieChart.update('active');
+  donutChart.data.datasets[0].data = [d.normal, parseInt(d.fraud.replace(',',''))];
+  donutChart.update('active');
 }
 
 function toggleAlerts() {
-  const panel = document.getElementById('alertPanel');
-  panel.classList.toggle('show');
+  document.getElementById('alertPanel').classList.toggle('show');
 }
 
-function showFraudRate() {
-  alert('📊 Fraud Rate Breakdown:\n\nLow Amount:    0.16% fraud rate\nMedium Amount: 0.17% fraud rate\nHigh Amount:   0.26% fraud rate\n\nOverall: 0.19% of all transactions are fraudulent.\nThis matches real-world banking fraud rates.');
-}
-
-function showModelInfo() {
-  alert('🤖 Random Forest Model Info:\n\nAlgorithm: Random Forest Classifier\nTrees: 100 estimators\nClass balancing: SMOTE oversampling\nTraining set: 172,756 transactions\nTest set: 43,189 transactions\n\nROC AUC: 0.9819\nPrecision: 94%\nRecall: 84%\nF1 Score: 89%');
-}
-
-function searchTransaction() {
+function searchTx() {
   const q = document.getElementById('searchInput').value.trim();
-  const result = document.getElementById('searchResult');
-  if (!q) return;
-  const fraudIds = [14492, 8979, 22143, 5531, 19027, 3421, 9876, 11234];
-  const isFraud = fraudIds.includes(parseInt(q)) || Math.random() > 0.85;
-  const amount = (Math.random() * 2000 + 10).toFixed(2);
-  const confidence = isFraud ? (85 + Math.random() * 14).toFixed(1) : (70 + Math.random() * 25).toFixed(1);
-  result.style.display = 'block';
-  result.style.borderColor = isFraud ? 'rgba(255,77,109,0.4)' : 'rgba(0,229,160,0.4)';
-  result.innerHTML = isFraud
-    ? `🚨 Transaction #${q} — <span style="color:#FF4D6D">FRAUD DETECTED</span> · Amount: $${amount} · Confidence: ${confidence}%`
-    : `✅ Transaction #${q} — <span style="color:#00E5A0">LEGITIMATE</span> · Amount: $${amount} · Safe confidence: ${confidence}%`;
+  const r = document.getElementById('searchResult');
+  if(!q) return;
+  const fraudIds = [14492,8979,22143,5531,19027,3421,9876,11234];
+  const isFraud = fraudIds.includes(parseInt(q)) || Math.random()>.85;
+  const amount = (Math.random()*2000+10).toFixed(2);
+  const conf = isFraud?(85+Math.random()*14).toFixed(1):(70+Math.random()*25).toFixed(1);
+  r.style.display='block';
+  r.style.borderColor = isFraud?'rgba(239,68,68,0.4)':'rgba(16,185,129,0.4)';
+  r.innerHTML = isFraud
+    ? `🚨 Transaction #${q} — <span style="color:#F87171;font-weight:700">FRAUD DETECTED</span> · $${amount} · Confidence: ${conf}%`
+    : `✅ Transaction #${q} — <span style="color:#34D399;font-weight:700">LEGITIMATE</span> · $${amount} · Safe: ${conf}%`;
 }
 
-// ── Animate progress bars ─────────────────────────────────
-setTimeout(() => {
-  [['p1',98.19],['p2',94],['p3',84],['p4',89],['p5',100]].forEach(([id, w]) => {
-    document.getElementById(id).style.width = w + '%';
-  });
-}, 500);
+setTimeout(()=>{
+  [['b1',98.2],['b2',94],['b3',84],['b4',89],['b5',100]].forEach(([id,w])=>{ document.getElementById(id).style.width=w+'%'; });
+}, 400);
 </script>
 </body>
 </html>
