@@ -53,14 +53,17 @@ FinSight is an end-to-end AI-powered banking fraud detection platform built on 2
 | Version Control | Git, GitHub |
 
 ## Project Structure
+
+```
 FinSight-Banking-Analytics/
-├── app.py
-├── index.html
-├── FinSight_Data_Cleaning.ipynb
-├── fraud_detection_model.pkl
-├── finsight_queries.sql
-├── confusion_matrix.png
-└── feature_importance.png
+├── app.py                          
+├── index.html                      
+├── FinSight_Data_Cleaning.ipynb    
+├── fraud_detection_model.pkl       
+├── finsight_queries.sql            
+├── confusion_matrix.png            
+└── feature_importance.png          
+```
 ## Dataset
 - Source: Credit Card Fraud Detection — Kaggle (mlg-ulb)
 - Size: 215,945 transactions after cleaning
